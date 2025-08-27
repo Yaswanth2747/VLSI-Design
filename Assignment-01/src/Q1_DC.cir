@@ -1,0 +1,49 @@
+* Assignment 1, Q1: CMOS Inverter - DC VTC
+
+.lib ~/VLSI_Design/open_pdks/sources/sky130_fd_pr/models/sky130.lib.spice tt
+
+* --------------------------
+* parameters
+* --------------------------
+.param VDD=1.8
+.param Lmin=0.15
+.param Wn=0.42
+.param Wp=1.31
+
+.param ASn=Wn*0.3
+.param ADn=Wn*0.3
+.param PSn=2*(Wn+0.3)
+.param PDn=2*(Wn+0.3)
+
+.param ASp=Wp*0.3
+.param ADp=Wp*0.3
+.param PSp=2*(Wp+0.3)
+.param PDp=2*(Wp+0.3)
+
+Vdd vdd gnd DC {VDD}
+Vin in gnd DC 0
+
+* Main Circuit
+Xinv1 in vdd gnd out not1_sub
+Xload out vdd gnd out_load not1_sub
+
+* Sub - Ckt Definition
+.subckt not1_sub a vdd vss z
+* NMOS
+XM1 z a vss vss sky130_fd_pr__nfet_01v8 L={Lmin} W={Wn} AS={ASn} AD={ADn} PS={PSn} PD={PDn}
+* PMOS
+XM2 z a vdd vdd sky130_fd_pr__pfet_01v8 L={Lmin} W={Wp} AS={ASp} AD={ADp} PS={PSp} PD={PDp}
+.ends not1_sub
+
+
+.dc Vin 0 {VDD} 0.001
+
+.control
+run
+set wr_singlescale
+wrdata inverter_vtc.csv v(in) v(out)
+plot v(out) vs v(in) 
+.endc
+
+.end
+

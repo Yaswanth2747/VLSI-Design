@@ -1,0 +1,98 @@
+####################################################################
+# Warning in this method your pdk location is change so be careful #
+# location in /home/<username>/.local/share/pdk/                   #
+####################################################################
+
+
+
+# Install ubuntu in WSL
+wsl --install -d Ubuntu-18.04 --web-download
+
+#enter the username and password to your wsl ubuntu
+
+#In wsl ubuntu terminal run these command
+
+sudo apt-get update
+sudo apt upgrade
+sudo apt install build-essential
+
+#for sky130 pdk installtion
+
+sudo apt-get install python3 python3-pip xz-utils
+python3 -m pip install --user --upgrade --no-cache-dir volare
+
+# this command take out from wsl
+
+exit
+
+#go into wsl ubuntu (type "wsl" in command prompt) 
+
+
+volare --version
+
+#change <username> this with your username
+
+export PDK_ROOT = "/home/<username>/.local/share/pdk/"
+
+#Listing All Available PDKs 
+
+volare ls-remote --pdk sky130
+
+#install using pdk location /home/<username>/.local/share/pdk/
+
+volare enable --pdk sky130 a519523b0d9bc913a6f87a5eed083597ed9e2e93 
+
+# install magic
+
+sudo apt install m4 libx11-dev tcl-dev tk-dev libcairo2-dev 
+
+git clone https://github.com/RTimothyEdwards/magic.git
+
+cd magic
+
+./configure
+make 
+sudo make install
+
+cd 
+
+# for install ngspice
+
+sudo apt install ngspice
+
+##########################################################################
+# ngspice test code  (save this code in filename.cir)                    # 
+# run this code in ubuntu terminal using "ngspice filename.cir"          #
+##########################################################################
+
+* SkyWater PDK
+* Simple inverter
+
+.lib ~/.local/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice tt
+
+* The voltage sources:
+Vdd vdd gnd DC 1.8
+Vi in gnd pulse(0 1.8 0p 200p 100p 1n 2n)
+
+Xnot1 in vdd gnd out not1
+
+.subckt not1 a vdd vss z
+xm01 z a vdd vdd sky130_fd_pr__pfet_01v8 l=0.15 w=0.99 as=0.26235 ad=0.26235 ps=2.51 pd=2.51
+xm02 z a vss vss sky130_fd_pr__nfet_01v8 l=0.15 w=0.495 as=0.131175 ad=0.131175 ps=1.52 pd=1.52
+c3 a vss 0.384f
+c2 z vss 0.576f
+.ends
+
+* Simulation command:
+.tran 1ps 10ns 0 10p
+
+.control
+run
+plot in out
+.endc
+
+
+
+
+
+
