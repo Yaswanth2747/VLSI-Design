@@ -1,0 +1,103 @@
+* SkyWater PDK
+* NOR3 first input inverted y=ab'c'
+
+.lib /usr/local/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice tt
+
+* the voltage sources:
+Vdd vdd gnd DC 1.8
+
+* Inputs
+VA a gnd DC 1.8
+VB b gnd pulse(0 1.8 0p 20p 20p 1n 2n)
+VC c gnd DC 0    
+
+*VA a gnd pulse(0 1.8 0p 20p 20p 1n 2n)
+*VB b gnd DC 0
+*VC c gnd DC 0    
+
+*VA a gnd DC 1.8
+*VB b gnd DC 0
+*VC c gnd pulse(0 1.8 0p 20p 20p 1n 2n)  
+
+Xnot1 a b c vdd gnd out NOR3B
+
+Xnot2 out vdd gnd out2 INVX1
+
+
+*constant Lmin
+.param Lmin = 0.15
+
+*Nor parametrs
+.param Wn_1 = 0.42
+.param Wp_1 = 2.52
+.param an_1 = {Wn_1*2*Lmin}
+.param ap_1 = {Wp_1*2*Lmin}
+.param pn_1 = {2*(Wn_1+2*Lmin)}
+.param pp_1 = {2*(Wp_1+2*Lmin)}
+
+*Nand parametrs
+.param Wn_2 = 0.42
+.param Wp_2 = 0.63
+.param an_2 = {Wn_2*2*Lmin}
+.param ap_2 = {Wp_2*2*Lmin}
+.param pn_2 = {2*(Wn_2+2*Lmin)}
+.param pp_2 = {2*(Wp_2+2*Lmin)}
+
+*Nand parametrs
+.param Wn_3 = 0.42
+.param Wp_3 = 1.26
+.param an_3 = {Wn_3*2*Lmin}
+.param ap_3 = {Wp_3*2*Lmin}
+.param pn_3 = {2*(Wn_3+2*Lmin)}
+.param pp_3 = {2*(Wp_3+2*Lmin)}
+
+
+.subckt NOR3B A B C vdd gnd out
+*Nor3
+
+*first nor part
+xm01 m  b    vdd vdd sky130_fd_pr__pfet_01v8 L=Lmin W=Wp_1 as=ap_1 ad=ap_1 ps=pp_1 pd=pp_1 
+xm02 y0 c    m   vdd sky130_fd_pr__pfet_01v8 L=Lmin W=Wp_1 as=ap_1 ad=ap_1 ps=pp_1 pd=pp_1 
+xm03 y0 b    gnd gnd sky130_fd_pr__nfet_01v8 L=Lmin W=Wn_1 as=an_1 ad=an_1 ps=pn_1 pd=pn_1
+xm04 y0 c    gnd gnd sky130_fd_pr__nfet_01v8 L=Lmin W=Wn_1 as=an_1 ad=an_1 ps=pn_1 pd=pn_1
+
+*2nd nand implementation
+xm05 y1 y0   vdd vdd sky130_fd_pr__pfet_01v8 L=Lmin W=Wp_2 as=ap_2 ad=ap_2 ps=pp_2 pd=pp_2 
+xm06 y1 a    vdd vdd sky130_fd_pr__pfet_01v8 L=Lmin W=Wp_2 as=ap_2 ad=ap_2 ps=pp_2 pd=pp_2 
+xm07 y1 a    n   gnd sky130_fd_pr__nfet_01v8 L=Lmin W=Wn_2 as=an_2 ad=an_2 ps=pn_2 pd=pn_2
+xm08 n  y0    gnd gnd sky130_fd_pr__nfet_01v8 L=Lmin W=Wn_2 as=an_2 ad=an_2 ps=pn_2 pd=pn_2
+
+*3rd inverer last
+xm09 out y1  vdd vdd sky130_fd_pr__pfet_01v8 L=Lmin W=Wp_3 as=ap_3 ad=ap_3 ps=pp_3 pd=pp_3 
+xm10 out y1  gnd gnd sky130_fd_pr__nfet_01v8 L=Lmin W=Wn_3 as=an_3 ad=an_3 ps=pn_3 pd=pn_3
+
+.ends
+
+
+
+.subckt INVX1 a vdd gnd b
+* Inverter 
+xm02 b a gnd gnd sky130_fd_pr__nfet_01v8 L=0.15 W=0.42 as=0.126 ad=0.126 ps=1.44 pd=1.44 
+xm01 b a vdd vdd sky130_fd_pr__pfet_01v8 L=0.15 W=1.26 as=0.378 ad=0.378 ps=3.12 pd=3.12
+.ends
+
+
+* Auto-measurements (20–80% of VDD) 
+* Rise time (10% → 90%) only between 35ns–40ns
+.measure tran tr TRIG v(out) VAL={0.2*1.8} RISE=1 TD=13n TARG v(out) VAL={0.8*1.8} RISE=1 TD=13n
+
+* Fall time (80% → 20%) only between 35ns–40ns
+.measure tran tf TRIG v(out) VAL={0.8*1.8} FALL=1 TD=15n TARG v(out) VAL={0.2*1.8} FALL=1 TD=15n
+
+*.measure tran tplh TRIG v(in) VAL={0.9} FALL=1 TARG v(out) VAL={0.9} RISE=1
+*.measure tran tphl TRIG v(in) VAL={0.9} RISE=1 TARG v(out) VAL={0.9} FALL=1
+*.measure tran tp   PARAM='(tplh + tphl)/2'
+
+
+* simulation command
+.tran 1ps 80ns 0 1ps
+
+.control 
+run 
+plot out      
+.endc

@@ -1,0 +1,124 @@
+magic
+tech sky130A
+timestamp 1757419244
+<< nwell >>
+rect -60 -18 93 144
+<< pwell >>
+rect -18 -36 93 -34
+rect -48 -96 93 -36
+rect -18 -112 93 -96
+<< nmos >>
+rect 30 -94 45 -52
+<< pmos >>
+rect 30 0 45 126
+<< ndiff >>
+rect 0 -65 30 -52
+rect 0 -86 4 -65
+rect 21 -86 30 -65
+rect 0 -94 30 -86
+rect 45 -62 75 -52
+rect 45 -83 54 -62
+rect 71 -83 75 -62
+rect 45 -94 75 -83
+<< pdiff >>
+rect 0 110 30 126
+rect 0 13 4 110
+rect 21 13 30 110
+rect 0 0 30 13
+rect 45 112 75 126
+rect 45 10 54 112
+rect 71 10 75 112
+rect 45 0 75 10
+<< ndiffc >>
+rect 4 -86 21 -65
+rect 54 -83 71 -62
+<< pdiffc >>
+rect 4 13 21 110
+rect 54 10 71 112
+<< psubdiff >>
+rect -42 -65 0 -52
+rect -42 -86 -30 -65
+rect -13 -86 0 -65
+rect -42 -94 0 -86
+<< nsubdiff >>
+rect -42 110 0 126
+rect -42 13 -30 110
+rect -13 13 0 110
+rect -42 0 0 13
+<< psubdiffcont >>
+rect -30 -86 -13 -65
+<< nsubdiffcont >>
+rect -30 13 -13 110
+<< poly >>
+rect 30 126 45 140
+rect -91 -16 -46 -12
+rect 30 -16 45 0
+rect -91 -17 45 -16
+rect -91 -34 -83 -17
+rect -66 -34 45 -17
+rect -91 -36 45 -34
+rect -91 -39 -46 -36
+rect 30 -52 45 -36
+rect 30 -107 45 -94
+<< polycont >>
+rect -83 -34 -66 -17
+<< locali >>
+rect -19 141 7 158
+rect 24 141 45 158
+rect 62 141 83 158
+rect -36 110 25 141
+rect -36 13 -30 110
+rect -13 13 4 110
+rect 21 13 25 110
+rect -36 5 25 13
+rect 50 112 75 121
+rect 50 10 54 112
+rect 71 10 75 112
+rect 50 -16 75 10
+rect -91 -17 12 -16
+rect -91 -34 -83 -17
+rect -66 -34 12 -17
+rect -91 -36 12 -34
+rect 50 -36 111 -16
+rect -36 -65 25 -57
+rect -36 -86 -30 -65
+rect -13 -86 4 -65
+rect 21 -86 25 -65
+rect -36 -108 25 -86
+rect 50 -62 75 -36
+rect 50 -83 54 -62
+rect 71 -83 75 -62
+rect 50 -91 75 -83
+rect -19 -125 4 -108
+rect 21 -125 40 -108
+rect 57 -125 61 -108
+rect -36 -126 61 -125
+<< viali >>
+rect -36 141 -19 158
+rect 7 141 24 158
+rect 45 141 62 158
+rect -36 -125 -19 -108
+rect 4 -125 21 -108
+rect 40 -125 57 -108
+<< metal1 >>
+rect -60 158 93 168
+rect -60 141 -36 158
+rect -19 141 7 158
+rect 24 141 45 158
+rect 62 141 93 158
+rect -60 128 93 141
+rect -48 -108 93 -96
+rect -48 -125 -36 -108
+rect -19 -125 4 -108
+rect 21 -125 40 -108
+rect 57 -125 93 -108
+rect -48 -136 93 -125
+<< labels >>
+rlabel locali -15 -34 2 -17 1 a
+rlabel locali 90 -34 107 -17 1 y
+rlabel metal1 34 141 51 158 1 vdd
+rlabel metal1 -17 141 0 158 1 vdd
+rlabel metal1 69 -125 86 -108 1 gnd
+rlabel metal1 22 -125 39 -108 1 gnd
+rlabel locali -57 -34 -40 -17 1 a
+<< end >>

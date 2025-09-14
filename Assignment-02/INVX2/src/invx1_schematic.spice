@@ -1,0 +1,26 @@
+* INVX1 schematic
+
+* parameters
+.param VDD=1.8
+.param Lmin=0.15
+.param Wn=0.42
+.param Wp=1.31
+
+.param ASn=Wn*0.3
+.param ADn=Wn*0.3
+.param PSn=2*(Wn+0.3)
+.param PDn=2*(Wn+0.3)
+
+.param ASp=Wp*0.3
+.param ADp=Wp*0.3
+.param PSp=2*(Wp+0.3)
+.param PDp=2*(Wp+0.3)
+
+
+* Sub - Ckt Definition
+.subckt INVX1 INPUT VDD GND OUTPUT
+* NMOS
+XM1 OUTPUT INPUT GND sky130_fd_pr__nfet_01v8 L={Lmin} W={Wn} AS={ASn} AD={ADn} PS={PSn} PD={PDn}
+* PMOS
+XM2 OUTPUT INPUT VDD sky130_fd_pr__pfet_01v8 L={Lmin} W={Wp} AS={ASp} AD={ADp} PS={PSp} PD={PDp}
+.ends INVX1

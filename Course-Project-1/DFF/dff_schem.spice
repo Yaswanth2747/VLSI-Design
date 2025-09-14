@@ -1,0 +1,59 @@
+*inverter parameters
+.param Lmin = 0.15
+.param Wn   = 0.42
+.param Wp   = 1.26
+
+* Drain/Source parasitics
+.param as_n = {Wn*2*Lmin}
+.param ad_n = {Wn*2*Lmin}
+.param ps_n = {2*(Wn+2*Lmin)}
+.param pd_n = {2*(Wn+2*Lmin)}
+
+.param as_p = {Wp*2*Lmin}
+.param ad_p = {Wp*2*Lmin}
+.param ps_p = {2*(Wp+2*Lmin)}
+.param pd_p = {2*(Wp+2*Lmin)}
+
+*CLK gate parameters
+.param Lmin_2 = 0.15
+.param Wn_2   = 0.42
+.param Wp_2   = {1*Wn_2}
+
+* Drain/Source parasitics
+.param as_n_2 = {Wn_2*2*Lmin_2}
+.param ad_n_2 = {Wn_2*2*Lmin_2}
+.param ps_n_2 = {2*(Wn_2+2*Lmin_2)}
+.param pd_n_2 = {2*(Wn_2+2*Lmin_2)}
+
+.param as_p_2 = {Wp_2*2*Lmin_2}
+.param ad_p_2 = {Wp_2*2*Lmin_2}
+.param ps_p_2 = {2*(Wp_2+2*Lmin_2)}
+.param pd_p_2 = {2*(Wp_2+2*Lmin_2)}
+
+.subckt INVX1 a Vdd GND b
+* Inverter 
+xm02 b a GND GND sky130_fd_pr__nfet_01v8 L=Lmin W=Wn as=as_n ad=ad_n ps=ps_n pd=pd_n 
+xm01 b a Vdd Vdd sky130_fd_pr__pfet_01v8 L=Lmin W=Wp as=as_p ad=ad_p ps=ps_p pd=pd_p 
+.ends
+
+.subckt CLK_gate a Vdd GND b CLK CLK_2
+* CLK gate
+xm02 b CLK   a GND sky130_fd_pr__nfet_01v8 L=Lmin_2 W=Wn_2 as=as_n_2 ad=ad_n_2 ps=ps_n_2 pd=pd_n_2 
+xm01 b CLK_2 a Vdd sky130_fd_pr__pfet_01v8 L=Lmin_2 W=Wp_2 as=as_p_2 ad=ad_p_2 ps=ps_p_2 pd=pd_p_2 
+.ends
+
+.subckt dff D Q Vdd GND CLK
+* neg edge flipflop — corrected pin names/case
+XL0 D    Vdd GND M1  INVX1
+XLC CLK  Vdd GND CLK_2 INVX1
+XL1 M1   Vdd GND M2  CLK CLK_2 CLK_gate
+XL2 M3   Vdd GND M4  INVX1
+XL3 M4   Vdd GND M2  CLK_2 CLK CLK_gate
+XL4 M2   Vdd GND M3  INVX1
+
+XL5 M3   Vdd GND M5  INVX1
+XL6 M5   Vdd GND M6  CLK_2 CLK CLK_gate
+XL7 Q    Vdd GND M7  INVX1
+XL8 M7   Vdd GND M6  CLK CLK_2 CLK_gate
+XL9 M6   Vdd GND Q   INVX1
+.ends

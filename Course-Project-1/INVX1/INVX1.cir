@@ -1,0 +1,47 @@
+* SkyWater PDK
+.lib /usr/local/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice tt
+
+.param Lmin = 0.15
+.param Wn   = 0.42
+.param Wp   = 1.26
+
+* Drain/Source parasitics
+.param as_n = {Wn*2*Lmin}
+.param ad_n = {Wn*2*Lmin}
+.param ps_n = {2*(Wn+2*Lmin)}
+.param pd_n = {2*(Wn+2*Lmin)}
+
+.param as_p = {Wp*2*Lmin}
+.param ad_p = {Wp*2*Lmin}
+.param ps_p = {2*(Wp+2*Lmin)}
+.param pd_p = {2*(Wp+2*Lmin)}
+
+* Voltage sources
+Vdd vdd gnd DC 1.8
+Vin in gnd PULSE(0 1.8 0 20p 20p 1n 2n)
+
+Xnot1 in  vdd gnd out  INVX1
+
+Xnot2 out vdd gnd out2 INVX1
+
+.subckt INVX1 a vdd gnd b
+* Inverter 
+xm02 b a gnd gnd sky130_fd_pr__nfet_01v8 L=Lmin W=Wn as=as_n ad=ad_n ps=ps_n pd=pd_n 
+xm01 b a vdd vdd sky130_fd_pr__pfet_01v8 L=Lmin W=Wp as=as_p ad=ad_p ps=ps_p pd=pd_p 
+.ends
+
+* Auto-measurements (20–80% of VDD) 
+.measure tran tr TRIG v(out) VAL={0.2*1.8} RISE=1 TARG v(out) VAL={0.8*1.8} RISE=1 
+.measure tran tf TRIG v(out) VAL={0.8*1.8} FALL=1 TARG v(out) VAL={0.2*1.8} FALL=1 
+.measure tran tplh TRIG v(in) VAL={0.9} FALL=1 TARG v(out) VAL={0.9} RISE=1
+.measure tran tphl TRIG v(in) VAL={0.9} RISE=1 TARG v(out) VAL={0.9} FALL=1
+.measure tran tp   PARAM='(tplh + tphl)/2'
+
+
+* simulation command
+.tran 1ps 10ns 0 1ps
+
+.control 
+run 
+plot in out 
+.endc
